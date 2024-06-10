@@ -12,7 +12,8 @@ namespace Catalog.API.Repositories
         private readonly ICatalogContext _catalogContext;
         public ProductRepository(ICatalogContext catalogContext)
         {
-            _catalogContext = catalogContext ?? throw new ArgumentNullException(nameof(catalogContext));
+            _catalogContext = catalogContext 
+            ?? throw new ArgumentNullException(nameof(catalogContext));
         }
         public async Task<IEnumerable<Product>> GetProductByName(string name)
         {
@@ -23,7 +24,7 @@ namespace Catalog.API.Repositories
                         .Find(filter)
                         .ToListAsync();
         }
-        public async Task<Product> GetProduct(string id)
+        public async Task<Product> GetProduct(Guid id)
         {
             return await _catalogContext
                         .Products.Find(p => p.Id == id)
@@ -43,7 +44,7 @@ namespace Catalog.API.Repositories
                             .InsertOneAsync(product);
         }
 
-        public async Task<bool> DeleteProduct(string id)
+        public async Task<bool> DeleteProduct(Guid id)
         {
             FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Id, id);
 
