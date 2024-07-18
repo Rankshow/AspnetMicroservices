@@ -1,0 +1,6 @@
+@ConsumingCrpto_HostAddress = http://localhost:5230
+
+GET {{ConsumingCrpto_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
