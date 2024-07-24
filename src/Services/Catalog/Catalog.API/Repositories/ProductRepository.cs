@@ -17,12 +17,12 @@ namespace Catalog.API.Repositories
         }
         public async Task<IEnumerable<Product>> GetProductByName(string name)
         {
-            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Name, name);
+                FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Name, name);
 
-            return await _catalogContext
-                        .Products
-                        .Find(filter)
-                        .ToListAsync();
+                return await _catalogContext
+                            .Products
+                            .Find(filter)
+                            .ToListAsync();
         }
         public async Task<Product> GetProduct(Guid id)
         {
@@ -32,16 +32,33 @@ namespace Catalog.API.Repositories
         }
         public async Task<IEnumerable<Product>> GetProducts()
         {
-            return await _catalogContext
-                            .Products
-                            .Find(p => true)
-                            .ToListAsync();
+            try
+            {
+                return await _catalogContext
+                                .Products
+                                .Find(p => true)
+                                .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("The product could not be found in the database.", ex);
+            }
+
+            return null;    
         }
         public async Task CreateProduct(Product product)
         {
-             await _catalogContext
-                            .Products
-                            .InsertOneAsync(product);
+            try
+            {
+                 await _catalogContext
+                                .Products
+                                .InsertOneAsync(product);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("The product cannot be found in the database", ex);
+            };
+
         }
 
         public async Task<bool> DeleteProduct(Guid id)
