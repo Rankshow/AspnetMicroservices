@@ -17,18 +17,34 @@ namespace Catalog.API.Repositories
         }
         public async Task<IEnumerable<Product>> GetProductByName(string name)
         {
+            try
+            {
                 FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Name, name);
 
                 return await _catalogContext
                             .Products
                             .Find(filter)
                             .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("The product By name {@name} cannot be find", ex);
+            }
+            return null;
         }
         public async Task<Product> GetProduct(Guid id)
         {
-            return await _catalogContext
-                        .Products.Find(p => p.Id == id)
-                        .FirstOrDefaultAsync();    
+            try
+            {
+                return await _catalogContext
+                            .Products.Find(p => p.Id == id)
+                            .FirstOrDefaultAsync();    
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("The product {@Id} could not be found", ex);
+            }
+            return null;
         }
         public async Task<IEnumerable<Product>> GetProducts()
         {
@@ -41,11 +57,11 @@ namespace Catalog.API.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine("The product could not be found in the database.", ex);
+                Console.WriteLine("Could not get all products from the database.", ex);
             }
 
             return null;    
-        }
+        } 
         public async Task CreateProduct(Product product)
         {
             try
@@ -56,42 +72,66 @@ namespace Catalog.API.Repositories
             }
             catch(Exception ex)
             {
-                Console.WriteLine("The product cannot be found in the database", ex);
+                Console.WriteLine($"Could not find {product}", ex);
             };
 
         }
 
         public async Task<bool> DeleteProduct(Guid id)
         {
-            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Id, id);
+            try
+            {
+                FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Id, id);
 
-            DeleteResult deleteResult = await _catalogContext
-                                                    .Products
-                                                    .DeleteOneAsync(filter);
+                DeleteResult deleteResult = await _catalogContext
+                                                        .Products
+                                                        .DeleteOneAsync(filter);
 
-            return deleteResult.IsAcknowledged
-                && deleteResult.DeletedCount > 0;
+                return deleteResult.IsAcknowledged
+                    && deleteResult.DeletedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex}");
+            }
+            return false;
         }
 
 
         public async Task<IEnumerable<Product>> GetProductByCategory(string categoryName)
         {
-            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Category, categoryName);
+            try
+            {
+                FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Category, categoryName);
 
-            return await _catalogContext
-                            .Products
-                            .Find(filter)
-                            .ToListAsync();
+                return await _catalogContext
+                                .Products
+                                .Find(filter)
+                                .ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Could not find {categoryName}", ex);
+            }
+            return null;
         }
 
         public async Task<bool> UpdateProduct(Product product)
         {
-            var updateResult = await _catalogContext
+            try
+            {
+                var updateResult = await _catalogContext
                               .Products
                               .ReplaceOneAsync(filter: g => g.Id == product.Id, replacement: product);
 
-            return updateResult.IsAcknowledged 
-                && updateResult.ModifiedCount > 0;
+                return updateResult.IsAcknowledged
+                    && updateResult.ModifiedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Could not update {product}", ex);
+            }
+            return false;
         }
     }
 }
