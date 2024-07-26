@@ -115,14 +115,14 @@ namespace Catalog.API.Repositories
             }
             return null;
         }
-
+          
         public async Task<bool> UpdateProduct(Product product)
         {
             try
             {
                 var updateResult = await _catalogContext
                               .Products
-                              .ReplaceOneAsync(filter: g => g.Id == product.Id, replacement: product);
+                                 .ReplaceOneAsync(filter: g => g.Id == product.Id, replacement: product);
 
                 return updateResult.IsAcknowledged
                     && updateResult.ModifiedCount > 0;
